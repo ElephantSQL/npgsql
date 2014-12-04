@@ -99,12 +99,13 @@ namespace Npgsql
         {
             if (connection == null)
                 throw new ArgumentNullException("connection");
-            string serverVersion = "";
-            UsingPostgresDBConnection((NpgsqlConnection)connection, conn =>
+                
+            var connectionBuilder = new NpgsqlConnectionStringBuilder((NpgsqlConnection)connection.ConnectionString);
+            using (var conn = new NpgsqlConnection(connectionBuilder.ConnectionString))
             {
-                serverVersion = conn.ServerVersion;
-            });
-            return serverVersion;
+                conn.Open();
+                return conn.ServerVersion;
+            }
         }
 
         protected override DbProviderManifest GetDbProviderManifest(string versionHint)
